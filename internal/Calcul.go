@@ -120,11 +120,23 @@ func evaluateRPN(rpn []string) (float64, error) {
 	return stack[0], nil
 }
 
+var ErrInvalidExpression = errors.New("invalid expression")
+
 func Calc(expression string) (float64, error) {
 	expression = strings.ReplaceAll(expression, " ", "")
+
 	rpn, err := toRPN(expression)
 	if err != nil {
+		return 0, ErrInvalidExpression
+	}
+
+	result, err := evaluateRPN(rpn)
+	if err != nil {
+		if strings.Contains(err.Error(), "invalid expression") {
+			return 0, ErrInvalidExpression
+		}
 		return 0, err
 	}
-	return evaluateRPN(rpn)
+
+	return result, nil
 }

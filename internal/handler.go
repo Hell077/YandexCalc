@@ -2,8 +2,13 @@ package internal
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 )
+
+type Request struct {
+	Expression string `json:"expression"`
+}
 
 type Response struct {
 	Result *float64 `json:"result,omitempty"`
@@ -16,15 +21,16 @@ func CalculateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var expr string
-	if err := json.NewDecoder(r.Body).Decode(&expr); err != nil {
+	var req Request
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		sendErrorResponse(w, "Invalid JSON format", http.StatusBadRequest)
 		return
 	}
 
-	result, err := Calc(expr)
+	result, err := Calc(req.Expression)
 	if err != nil {
-		if err.Error() == "invalid expression" {
+		// Если ошибка - ErrInvalidExpression, возвращаем код 422
+		if errors.Is(err, ErrInvalidExpression) {
 			sendErrorResponse(w, "Expression is not valid", http.StatusUnprocessableEntity)
 		} else {
 			sendErrorResponse(w, "Internal server error", http.StatusInternalServerError)
