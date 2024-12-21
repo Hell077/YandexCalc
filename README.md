@@ -52,6 +52,5 @@
 
 # Запуск тестов на покрытие
 ````bash
-  cd internal
   go test -cover ./...
 ````
