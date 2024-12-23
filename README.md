@@ -1,5 +1,9 @@
 # Запуск
 
+````bash
+    go run cmd/app/main.go 
+````
+
 # Примеры запросов (Postman или curl)
 
 # Тело запроса если используете postman (на Url : localhost:8080/api/v1/calculate)
